@@ -1,7 +1,12 @@
-import React from "react";
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import React, { useCallback } from "react";
+import {
+  CredentialResponse,
+  GoogleLogin,
+  GoogleOAuthProvider,
+} from "@react-oauth/google";
 import { Container, Paper } from "@mui/material";
 import { styled } from "@mui/system";
+import { setAppTokens } from "../utils/commanFunctions";
 
 const { REACT_APP_GOOGLE_CLIENT_ID } = import.meta.env;
 
@@ -21,18 +26,23 @@ const StyledPaper = styled(Paper)({
 });
 
 const GoogleSignIn: React.FC = () => {
+  const handleLoginSuccess = useCallback(
+    (credentialResponse: CredentialResponse) => {
+      if (credentialResponse?.credential)
+        setAppTokens(credentialResponse.credential);
+    },
+    []
+  );
+
+  const handleLoginError = useCallback(() => {}, []);
   return (
     <GoogleOAuthProvider clientId={REACT_APP_GOOGLE_CLIENT_ID}>
       <StyledContainer>
         <StyledPaper>
           <h2>Welcome to E-commerce App</h2>
           <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              console.log(credentialResponse);
-            }}
-            onError={() => {
-              console.log("Login Failed");
-            }}
+            onSuccess={handleLoginSuccess}
+            onError={() => handleLoginError}
           />
         </StyledPaper>
       </StyledContainer>
